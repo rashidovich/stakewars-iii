@@ -4,7 +4,7 @@
   ```
   some examples [Hetzner AX41-NVME](https://www.hetzner.com/dedicated-rootserver/ax41-nvme/), [OVH Rise-APAC](https://www.ovhcloud.com/en-ie/bare-metal/rise/rise-apac/)
    
-  import, check that server is suitable
+  important, check that server is suitable
 
   ```
   lscpu | grep -P '(?=.*avx )(?=.*sse4.2 )(?=.*cx16 )(?=.*popcnt )' > /dev/null \
@@ -85,8 +85,54 @@
     "epoch_id": "E8H2sXbcv61gg2bJ213avYtWDmsU6EUFHBcwDQnARCXr",
     "epoch_start_height": 3098994
   ```
-
+- deploy new staking pool. \
+  staking pool is a smart contract that is deployed to a NEAR account \
   
+  run in terminal `near login`, 
+  ![near_login](/near_login.png) \
+  copy provided link and paste it into browser \
+  ![grant](grant_access.png) \
+  grant Access to Near CLI \
+  error `This site cannot be reached` - Ok \
+  enter your wallet and press Enter \
+  `Logged in as [xxx.near] with public key [ yyy:zzz] successfully`
+  
+  next, `near generate-key [pool_id]`, pool_id ---> xx.factory.shardnet.near WHERE xx is you pool name \
+  copy the file generated to shardnet folder: make sure to replace <pool_id> by your pool name \
+  cp .near-credentials/shardnet/YOUR_WALLET.json .near/validator_key.json
+  
+  edit “account_id” => xx.factory.shardnet.near, where xx is your PoolName \
+  change private_key to secret_key
+  
+  restart neard service `sudo systemctl restart neard`
+
+- monitoring
+  [wallet](https://wallet.shardnet.near.org/)
+  [explorer](https://explorer.shardnet.near.org/)
+  
+  logs
+  ```
+  journalctl -n 100 -f -u neard | ccze -A
+  ```
+  check node vrsion
+  ```
+  sudo apt install curl jq (execute only once)
+  curl -s http://127.0.0.1:3030/status | jq .version
+  ```
+  check delegators and stake  
+  ```
+  near view <your pool>.factory.shardnet.near get_accounts '{"from_index": 0, "limit": 10}' --accountId <accountId>.shardnet.near
+  ```
+  check why kicked (if it has happened ofc)
+  ```
+  curl -s -d '{"jsonrpc": "2.0", "method": "validators", "id": "dontcare", "params": [null]}' -H 'Content-Type: application/json' 127.0.0.1:3030 | jq -c '.result.prev_epoch_kickout[] | select(.account_id | contains ("<POOL_ID>"))' | jq .reason
+  ```
+  blocks produced/expected
+  ```
+  curl -r -s -d '{"jsonrpc": "2.0", "method": "validators", "id": "dontcare", "params": [null]}' -H 'Content-Type: application/json' 127.0.0.1:3030 | jq -c '.result.current_validators[] | select(.account_id | contains ("POOL_ID"))'
+  ```
+- congrats. that's it
+ 
   
 
 
