@@ -41,9 +41,9 @@
   git clone https://github.com/near/nearcore
   cd nearcore
   git fetch
+  git checkout fe435d02c5ea497933c89d5e7d1703d9379b7e1f
   ```
-  `git checkout fe435d02c5ea497933c89d5e7d1703d9379b7e1f`
-  `cargo build -p neard --release --features shardnet`
+  `cargo build -p neard --release --features shardnet` \
   `./target/release/neard --home ~/.near init --chain-id shardnet --download-genesis`
   ```
   rm ~/.near/config.json
