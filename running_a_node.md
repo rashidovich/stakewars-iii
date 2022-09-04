@@ -49,7 +49,7 @@
   rm ~/.near/config.json
   wget -O ~/.near/config.json https://s3-us-west-1.amazonaws.com/build.nearprotocol.com/nearcore-deploy/shardnet/config.json  
   ```
-  lets run a daemon, in you working directory execute `nano neard.service` and paste there
+  lets run a daemon, in your working directory execute `nano neard.service` and paste there
   ```
   [Unit]
   Description=NEARd Daemon Service
